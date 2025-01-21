@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 
 @Service
@@ -29,19 +31,25 @@ public class HotelService {
 
     public Hotel registrarHotel(Hotel hotel) {
         if (hotel.getNombre() == null || hotel.getDireccion() == null) {
-            throw new IllegalArgumentException("Nombre y dirección son obligatorios");
+            return null;
         }
         return hotelRepository.save(hotel);
     }
 
     public Hotel updateHotel(int id, Hotel hotelDetails) {
-        Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel no encontrado"));
+        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
+        if(!hotelOptional.isPresent()){
+            return null;
+        }
+        Hotel hotel = hotelOptional.get();
         hotel.setNombre(hotelDetails.getNombre());
         hotel.setDireccion(hotelDetails.getDireccion());
         hotel.setTelefono(hotelDetails.getTelefono());
         hotel.setEmail(hotelDetails.getEmail());
         hotel.setSitioWeb(hotelDetails.getSitioWeb());
+        if(hotel.getNombre() == null || hotel.getDireccion() == null){
+            return null;
+        }
         return hotelRepository.save(hotel);
     }
 
@@ -58,9 +66,9 @@ public class HotelService {
         return hotelRepository.buscarConFiltros(id, nombre, direccion, telefono, email, sitioWeb, pageable);
     }
 
-    public void eliminarHotel(int id) {
+    public boolean eliminarHotel(int id) {
         if (!hotelRepository.existsById(id)) {
-            throw new RuntimeException("Hotel con ID " + id + " no encontrado");
+            return false;
         }
     
         // Obtener todas las habitaciones del hotel
@@ -74,6 +82,7 @@ public class HotelService {
     
         // Finalmente, eliminar el hotel
         hotelRepository.deleteById(id);
+        return true;
     }
     
 }

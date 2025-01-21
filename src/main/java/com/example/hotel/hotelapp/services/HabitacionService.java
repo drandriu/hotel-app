@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Pageable;
+
 @Service
 public class HabitacionService {
 
@@ -30,18 +31,24 @@ public class HabitacionService {
 
     public Habitacion registrarHabitacion(Habitacion habitacion) {
         if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null) {
-            throw new IllegalArgumentException("Número de habitación y tipo son obligatorios");
+            return null;
         }
         return habitacionRepository.save(habitacion);
     }
 
     public Habitacion updateHabitacion(int id, Habitacion habitacionDetails) {
-        Habitacion habitacion = habitacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+        Optional<Habitacion> habitacionOptional = habitacionRepository.findById(id);
+        if(!habitacionOptional.isPresent()){
+            return null;
+        }
+        Habitacion habitacion = habitacionOptional.get();
         habitacion.setNumeroHabitacion(habitacionDetails.getNumeroHabitacion());
         habitacion.setTipo(habitacionDetails.getTipo());
         habitacion.setPrecioNoche(habitacionDetails.getPrecioNoche());
         habitacion.setIdHotel(habitacionDetails.getIdHotel());
+        if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null) {
+            return null;
+        }
         return habitacionRepository.save(habitacion);
     }
 
@@ -60,13 +67,14 @@ public class HabitacionService {
     
 
     @Transactional
-    public void eliminarHabitacion(int id){
+    public boolean eliminarHabitacion(int id){
         if (!habitacionRepository.existsById(id)) {
-            throw new RuntimeException("Habitación con ID " + id + " no encontrada");
+            return false;
         }
     
         huespedRepository.deleteByIdHabitacion(id);
         habitacionRepository.deleteById(id);
+        return true;
     }
 
     

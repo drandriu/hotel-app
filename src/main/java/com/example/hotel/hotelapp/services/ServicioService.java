@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @Service
 public class ServicioService {
@@ -24,16 +25,22 @@ public class ServicioService {
 
     public Servicio registrarServicio(Servicio servicio) {
         if (servicio.getNombre() == null || servicio.getDescripcion() == null) {
-            throw new IllegalArgumentException("Nombre y descripción son obligatorios");
+            return null;
         }
         return servicioRepository.save(servicio);
     }
 
     public Servicio updateServicio(int id, Servicio servicioDetails) {
-        Servicio servicio = servicioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
+        Optional<Servicio> servicioOptional = servicioRepository.findById(id);
+        if(!servicioOptional.isPresent()){
+            return null;
+        }
+        Servicio servicio = servicioOptional.get();
         servicio.setNombre(servicioDetails.getNombre());
         servicio.setDescripcion(servicioDetails.getDescripcion());
+        if (servicio.getNombre() == null || servicio.getDescripcion() == null) {
+            return null;
+        }
         return servicioRepository.save(servicio);
     }
 
@@ -48,9 +55,12 @@ public class ServicioService {
         return servicioRepository.buscarConFiltros(id, nombre, descripcion, pageable);
     }
 
-    public void eliminarServicio(int id) {
-        Servicio servicio = servicioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
-        servicioRepository.delete(servicio);
+    public boolean eliminarServicio(int id) {
+        if (!servicioRepository.existsById(id)) {
+            return false;
+        }
+    
+        servicioRepository.deleteById(id);
+        return true;
     }
 }

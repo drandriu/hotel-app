@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @Service
 public class HuespedService {
@@ -25,19 +26,25 @@ public class HuespedService {
 
     public Huesped registrarHuesped(Huesped huesped) {
         if (huesped.getNombre() == null || huesped.getDniPasaporte() == null) {
-            throw new IllegalArgumentException("Nombre y DNI/Pasaporte son obligatorios");
+            return null;
         }
         return huespedRepository.save(huesped);
     }
 
     public Huesped updateHuesped(int id, Huesped huespedDetails) {
-        Huesped huesped = huespedRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Huesped no encontrado"));
+        Optional<Huesped> huespedOptional = huespedRepository.findById(id);
+        if(!huespedOptional.isPresent()){
+            return null;
+        }
+        Huesped huesped = huespedOptional.get();
         huesped.setNombre(huespedDetails.getNombre());
         huesped.setApellido(huespedDetails.getApellido());
         huesped.setDniPasaporte(huespedDetails.getDniPasaporte());
         huesped.setFechaCheckIn(huespedDetails.getFechaCheckIn());
         huesped.setFechaCheckOut(huespedDetails.getFechaCheckOut());
+        if (huesped.getNombre() == null || huesped.getDniPasaporte() == null) {
+            return null;
+        }
         return huespedRepository.save(huesped);
     }
 
@@ -55,9 +62,12 @@ public class HuespedService {
         return huespedRepository.buscarConFiltros(idHuesped, idHabitacion, nombre, apellido, dniPasaporte, fechaCheckIn, fechaCheckOut, pageable);
     }
 
-    public void eliminarHuesped(int id) {
-        Huesped huesped = huespedRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Huesped no encontrado"));
-        huespedRepository.delete(huesped);
+    public boolean eliminarHuesped(int id) {
+        if (!huespedRepository.existsById(id)) {
+            return false;
+        }
+    
+        huespedRepository.deleteById(id);
+        return true;
     }
 }
