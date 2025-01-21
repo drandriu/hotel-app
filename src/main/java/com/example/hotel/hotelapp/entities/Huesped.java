@@ -12,7 +12,10 @@ public class Huesped {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private int id;
+    private int idHuesped;
+
+
+    private int idHabitacion; //id unico de la habitacion a la que pertenecen
 
     private String nombre;
     private String apellido;
@@ -30,12 +33,18 @@ public class Huesped {
 
     
     // Getters y Setters
-    public int getId() {
-        return id;
+    public int getIdHuesped(){
+        return idHuesped;
+    }
+    public void setIdHuesped(int id){
+        this.idHuesped = id;
+    }
+    public int getIdHabitacion() {
+        return idHabitacion;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdHabitacion(int id) {
+        this.idHabitacion = id;
     }
 
     public String getNombre() {
