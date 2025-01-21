@@ -1,6 +1,7 @@
 package com.example.hotel.hotelapp.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +51,11 @@ public class HotelAppController {
 
     @GetMapping("/hoteles/filtros")
     @Operation(summary = "Buscar Hotel con filtros")
-    public List<Hotel> buscarHotelesFiltro(@RequestParam Map<String, String> parameters) {
-        return hotelService.buscarHotelesFiltro(parameters);
+    public Page<Hotel> buscarHotelesFiltro(
+        @RequestParam Map<String, String> parameters,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+        return hotelService.buscarHotelesFiltro(parameters, page, size);
     }
 
     @DeleteMapping("/hoteles/{id}")
@@ -83,8 +87,10 @@ public class HotelAppController {
 
     @GetMapping("/habitaciones/filtros")
     @Operation(summary = "Buscar Habitacion con filtros")
-    public List<Habitacion> buscarHabitacionesFiltro(@RequestParam Map<String, String> parameters) {
-        return habitacionService.buscarHabitacionesFiltro(parameters);
+    public Page<Habitacion> buscarHabitacionesFiltro(@RequestParam Map<String, String> parameters,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+        return habitacionService.buscarHabitacionesFiltro(parameters, page, size);
     }
 
     @DeleteMapping("/habitaciones/{id}")
@@ -115,8 +121,10 @@ public class HotelAppController {
 
     @GetMapping("/huespedes/filtros")
     @Operation(summary = "Buscar huesped con filtros")
-    public List<Huesped> buscarHuespedFiltro(@RequestParam Map<String, String> parameters) {
-        return huespedService.buscarHuespedFiltro(parameters);
+    public Page<Huesped> buscarHuespedFiltro(@RequestParam Map<String, String> parameters,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+        return huespedService.buscarHuespedFiltro(parameters, page, size);
     }
 
     @DeleteMapping("/huespedes/{id}")
@@ -147,8 +155,10 @@ public class HotelAppController {
 
     @GetMapping("/servicios/filtros")
     @Operation(summary = "Obtener todos los huespedes")
-    public List<Servicio> buscarServiciosFiltro(@RequestParam Map<String, String> parameters) {
-        return servicioService.buscarServiciosFiltro(parameters);
+    public Page<Servicio> buscarServiciosFiltro(@RequestParam Map<String, String> parameters,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+        return servicioService.buscarServiciosFiltro(parameters, page, size);
     }
 
     @DeleteMapping("/servicios/{id}")

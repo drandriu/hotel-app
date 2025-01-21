@@ -3,6 +3,9 @@ package com.example.hotel.hotelapp.services;
 import com.example.hotel.hotelapp.entities.Servicio;
 import com.example.hotel.hotelapp.repositories.ServicioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,13 +37,15 @@ public class ServicioService {
         return servicioRepository.save(servicio);
     }
 
-    public List<Servicio> buscarServiciosFiltro(Map<String, String> parameters) {
-        return servicioRepository.findAll().stream()
-                .filter(servicio -> parameters.get("nombre") == null ||
-                        servicio.getNombre().toLowerCase().contains(parameters.get("nombre").toLowerCase()))
-                .filter(servicio -> parameters.get("descripcion") == null ||
-                        servicio.getDescripcion().toLowerCase().contains(parameters.get("descripcion").toLowerCase()))
-                .collect(Collectors.toList());
+    public Page<Servicio> buscarServiciosFiltro(Map<String, String> parameters, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+    
+        String idStr = parameters.getOrDefault("id", null);
+        Integer id = (idStr != null && !idStr.isEmpty()) ? Integer.parseInt(idStr) : null;
+        String nombre = parameters.getOrDefault("nombre", null);
+        String descripcion = parameters.getOrDefault("descripcion", null);
+    
+        return servicioRepository.buscarConFiltros(id, nombre, descripcion, pageable);
     }
 
     public void eliminarServicio(int id) {

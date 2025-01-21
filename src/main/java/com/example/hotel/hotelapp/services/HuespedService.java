@@ -3,8 +3,12 @@ package com.example.hotel.hotelapp.services;
 import com.example.hotel.hotelapp.entities.Huesped;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,15 +41,18 @@ public class HuespedService {
         return huespedRepository.save(huesped);
     }
 
-    public List<Huesped> buscarHuespedFiltro(Map<String, String> parameters) {
-        return huespedRepository.findAll().stream()
-                .filter(huesped -> parameters.get("nombre") == null || 
-                        huesped.getNombre().toLowerCase().contains(parameters.get("nombre").toLowerCase()))
-                .filter(huesped -> parameters.get("apellido") == null || 
-                        huesped.getApellido().toLowerCase().contains(parameters.get("apellido").toLowerCase()))
-                .filter(huesped -> parameters.get("dniPasaporte") == null || 
-                        huesped.getDniPasaporte().toLowerCase().contains(parameters.get("dniPasaporte").toLowerCase()))
-                .collect(Collectors.toList());
+    public Page<Huesped> buscarHuespedFiltro(Map<String, String> parameters, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+    
+        Integer idHuesped = parameters.get("idHuesped") != null ? Integer.parseInt(parameters.get("idHuesped")) : null;
+        Integer idHabitacion = parameters.get("idHabitacion") != null ? Integer.parseInt(parameters.get("idHabitacion")) : null;
+        String nombre = parameters.getOrDefault("nombre", null);
+        String apellido = parameters.getOrDefault("apellido", null);
+        String dniPasaporte = parameters.getOrDefault("dniPasaporte", null);
+        Date fechaCheckIn = parameters.get("fechaCheckIn") != null ? Date.valueOf(parameters.get("fechaCheckIn")) : null;
+        Date fechaCheckOut = parameters.get("fechaCheckOut") != null ? Date.valueOf(parameters.get("fechaCheckOut")) : null;
+    
+        return huespedRepository.buscarConFiltros(idHuesped, idHabitacion, nombre, apellido, dniPasaporte, fechaCheckIn, fechaCheckOut, pageable);
     }
 
     public void eliminarHuesped(int id) {

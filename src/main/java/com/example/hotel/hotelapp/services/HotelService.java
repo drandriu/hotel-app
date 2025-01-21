@@ -3,11 +3,13 @@ package com.example.hotel.hotelapp.services;
 import com.example.hotel.hotelapp.entities.*;
 import com.example.hotel.hotelapp.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class HotelService {
@@ -43,19 +45,17 @@ public class HotelService {
         return hotelRepository.save(hotel);
     }
 
-    public List<Hotel> buscarHotelesFiltro(Map<String, String> parameters) {
-        return hotelRepository.findAll().stream()
-                .filter(hotel -> parameters.get("nombre") == null || 
-                        hotel.getNombre().toLowerCase().contains(parameters.get("nombre").toLowerCase()))
-                .filter(hotel -> parameters.get("direccion") == null || 
-                        hotel.getDireccion().toLowerCase().contains(parameters.get("direccion").toLowerCase()))
-                .filter(hotel -> parameters.get("telefono") == null || 
-                        hotel.getTelefono().contains(parameters.get("telefono")))
-                .filter(hotel -> parameters.get("email") == null || 
-                        hotel.getEmail().toLowerCase().contains(parameters.get("email").toLowerCase()))
-                .filter(hotel -> parameters.get("sitioWeb") == null || 
-                        hotel.getSitioWeb().toLowerCase().contains(parameters.get("sitioWeb").toLowerCase()))
-                .collect(Collectors.toList());
+    public Page<Hotel> buscarHotelesFiltro(Map<String, String> parameters, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+    
+        Integer id = parameters.containsKey("id") ? Integer.parseInt(parameters.get("id")) : null;
+        String nombre = parameters.getOrDefault("nombre", null);
+        String direccion = parameters.getOrDefault("direccion", null);
+        String telefono = parameters.getOrDefault("telefono", null);
+        String email = parameters.getOrDefault("email", null);
+        String sitioWeb = parameters.getOrDefault("sitioWeb", null);
+    
+        return hotelRepository.buscarConFiltros(id, nombre, direccion, telefono, email, sitioWeb, pageable);
     }
 
     public void eliminarHotel(int id) {
