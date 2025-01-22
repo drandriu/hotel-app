@@ -18,7 +18,10 @@ public class Servicio {
     public Servicio() {
     }
 
-
+    public Servicio(int id, String nombre, String descripcion){
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
 
 
 

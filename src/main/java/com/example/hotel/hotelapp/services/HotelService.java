@@ -86,7 +86,7 @@ public class HotelService {
     
         // Eliminar huéspedes de cada habitación antes de eliminar la habitación
         for (Habitacion habitacion : habitaciones) {
-            huespedRepository.deleteById(habitacion.getId());
+            huespedRepository.deleteByIdHabitacion(habitacion.getId());
             habitacionRepository.deleteById(habitacion.getId());
         }
     

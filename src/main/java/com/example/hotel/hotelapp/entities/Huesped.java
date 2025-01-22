@@ -28,6 +28,16 @@ public class Huesped {
     }
 
 
+    public Huesped(int idHuesped, int idHabitacion, String nombre, String apellido, String dniPasaporte, Date fechaCheckIn, Date fechaCheckOut) {
+        this.idHuesped = idHuesped;
+        this.idHabitacion = idHabitacion;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dniPasaporte = dniPasaporte;
+        this.fechaCheckIn = fechaCheckIn;
+        this.fechaCheckOut = fechaCheckOut;
+    }
+    
 
 
 
