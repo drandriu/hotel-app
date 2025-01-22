@@ -1,5 +1,6 @@
 package com.example.hotel.hotelapp.services;
 
+import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.entities.Servicio;
 import com.example.hotel.hotelapp.repositories.ServicioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,48 +21,66 @@ public class ServicioService {
     @Autowired
     private ServicioRepository servicioRepository;
 
-    public List<Servicio> findAll() {
-        return servicioRepository.findAll();
+    public List<ServicioDTO> findAll() {
+        return servicioRepository.findAll().stream()
+                .map(this::convertirA_DTO)
+                .collect(Collectors.toList());
     }
 
-    public Servicio registrarServicio(Servicio servicio) {
-        if (servicio.getNombre() == null || servicio.getDescripcion() == null) {
+    public ServicioDTO registrarServicio(ServicioDTO servicioDTO) {
+        Servicio servicio = convertirA_Entidad(servicioDTO);
+        if (servicio.getNombre() == null || servicio.getDescripcion() == null
+        || servicio.getNombre() == "" || servicio.getDescripcion() == "") {
             return null;
         }
-        return servicioRepository.save(servicio);
+        Servicio servicioGuardado = servicioRepository.save(servicio);
+        return convertirA_DTO(servicioGuardado);
     }
 
-    public Servicio updateServicio(int id, Servicio servicioDetails) {
+    public ServicioDTO updateServicio(int id, ServicioDTO servicioDTO) {
         Optional<Servicio> servicioOptional = servicioRepository.findById(id);
-        if(!servicioOptional.isPresent()){
+        if (!servicioOptional.isPresent()) {
             return null;
         }
         Servicio servicio = servicioOptional.get();
-        servicio.setNombre(servicioDetails.getNombre());
-        servicio.setDescripcion(servicioDetails.getDescripcion());
-        if (servicio.getNombre() == null || servicio.getDescripcion() == null) {
+        if (servicio.getNombre() == null || servicio.getDescripcion() == null
+        || servicio.getNombre() == "" || servicio.getDescripcion() == "") {
             return null;
         }
-        return servicioRepository.save(servicio);
+        servicio.setNombre(servicioDTO.getNombre());
+        servicio.setDescripcion(servicioDTO.getDescripcion());
+
+        Servicio servicioActualizado = servicioRepository.save(servicio);
+        return convertirA_DTO(servicioActualizado);
     }
 
-    public Page<Servicio> buscarServiciosFiltro(Map<String, String> parameters, int page, int size) {
+    public Page<ServicioDTO> buscarServiciosFiltro(Map<String, String> parameters, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-    
         String idStr = parameters.getOrDefault("id", null);
         Integer id = (idStr != null && !idStr.isEmpty()) ? Integer.parseInt(idStr) : null;
         String nombre = parameters.getOrDefault("nombre", null);
         String descripcion = parameters.getOrDefault("descripcion", null);
-    
-        return servicioRepository.buscarConFiltros(id, nombre, descripcion, pageable);
+
+        Page<Servicio> servicios = servicioRepository.buscarConFiltros(id, nombre, descripcion, pageable);
+        return servicios.map(this::convertirA_DTO);
     }
 
     public boolean eliminarServicio(int id) {
         if (!servicioRepository.existsById(id)) {
             return false;
         }
-    
         servicioRepository.deleteById(id);
         return true;
+    }
+
+    private ServicioDTO convertirA_DTO(Servicio servicio) {
+        return new ServicioDTO(servicio.getId(), servicio.getNombre(), servicio.getDescripcion());
+    }
+
+    private Servicio convertirA_Entidad(ServicioDTO servicioDTO) {
+        Servicio servicio = new Servicio();
+        servicio.setNombre(servicioDTO.getNombre());
+        servicio.setDescripcion(servicioDTO.getDescripcion());
+        return servicio;
     }
 }

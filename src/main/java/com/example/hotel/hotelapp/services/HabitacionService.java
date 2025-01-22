@@ -1,6 +1,9 @@
 package com.example.hotel.hotelapp.services;
 
+import com.example.hotel.hotelapp.dtos.HabitacionDTO;
+import com.example.hotel.hotelapp.dtos.HotelDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
+import com.example.hotel.hotelapp.entities.Hotel;
 import com.example.hotel.hotelapp.repositories.HabitacionRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,34 +29,47 @@ public class HabitacionService {
     @Autowired
     private HuespedRepository huespedRepository;
 
-    public List<Habitacion> findAll() {
-        return habitacionRepository.findAll();
+    public List<HabitacionDTO> findAll() {
+        //return habitacionRepository.findAll();
+        return habitacionRepository.findAll().stream()
+                .map(this::convertirA_DTO)
+                .collect(Collectors.toList());
     }
 
-    public Habitacion registrarHabitacion(Habitacion habitacion) {
-        if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null) {
+    public HabitacionDTO registrarHabitacion(HabitacionDTO habitacionDTO) {
+        /*if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null
+        ||habitacion.getNumeroHabitacion() == "" || habitacion.getTipo() == "") {
             return null;
         }
-        return habitacionRepository.save(habitacion);
+        return habitacionRepository.save(habitacion);*/
+        Habitacion habitacion = convertirA_Entidad(habitacionDTO);
+        if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null
+        ||habitacion.getNumeroHabitacion() == "" || habitacion.getTipo() == "") {
+            return null;
+        }
+        habitacionRepository.save(habitacion);
+        return convertirA_DTO(habitacion);
     }
 
-    public Habitacion updateHabitacion(int id, Habitacion habitacionDetails) {
+    public HabitacionDTO updateHabitacion(int id, HabitacionDTO habitacionDTO) {
         Optional<Habitacion> habitacionOptional = habitacionRepository.findById(id);
         if(!habitacionOptional.isPresent()){
             return null;
         }
         Habitacion habitacion = habitacionOptional.get();
-        habitacion.setNumeroHabitacion(habitacionDetails.getNumeroHabitacion());
-        habitacion.setTipo(habitacionDetails.getTipo());
-        habitacion.setPrecioNoche(habitacionDetails.getPrecioNoche());
-        habitacion.setIdHotel(habitacionDetails.getIdHotel());
-        if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null) {
+        habitacion.setNumeroHabitacion(habitacionDTO.getNumeroHabitacion());
+        habitacion.setTipo(habitacionDTO.getTipo());
+        habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
+        habitacion.setIdHotel(habitacionDTO.getIdHotel());
+        if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null
+        ||habitacion.getNumeroHabitacion() == "" || habitacion.getTipo() == "") {
             return null;
         }
-        return habitacionRepository.save(habitacion);
+        Habitacion habitacionActualizada = habitacionRepository.save(habitacion);
+        return convertirA_DTO(habitacionActualizada);
     }
 
-    public Page<Habitacion> buscarHabitacionesFiltro(Map<String, String> parameters, int page, int size) {
+    public Page<HabitacionDTO> buscarHabitacionesFiltro(Map<String, String> parameters, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         
         Integer id = parameters.containsKey("id") ? Integer.parseInt(parameters.get("id")) : null;
@@ -62,7 +79,8 @@ public class HabitacionService {
         String precioStr = parameters.getOrDefault("precioNoche", null);
         Float precioNoche = (precioStr != null && !precioStr.isEmpty()) ? Float.parseFloat(precioStr) : null;
     
-        return habitacionRepository.buscarConFiltros(id, idHotel, numeroHabitacion, tipo, precioNoche, pageable);
+        Page<Habitacion> habitacionPage = habitacionRepository.buscarConFiltros(id, idHotel, numeroHabitacion, tipo, precioNoche, pageable);
+        return habitacionPage.map(this::convertirA_DTO);
     }
     
 
@@ -77,6 +95,24 @@ public class HabitacionService {
         return true;
     }
 
-    
+    private HabitacionDTO convertirA_DTO(Habitacion habitacion) {
+        return new HabitacionDTO(
+        habitacion.getId(),
+        habitacion.getIdHotel(),
+        habitacion.getNumeroHabitacion(),
+        habitacion.getTipo(),
+        habitacion.getPrecioNoche()
+        );
+    }
+    private Habitacion convertirA_Entidad(HabitacionDTO habitacionDTO) {
+        Habitacion habitacion = new Habitacion();
+        habitacion.setId(habitacionDTO.getId());
+        habitacion.setIdHotel(habitacionDTO.getIdHotel());
+        habitacion.setNumeroHabitacion(habitacionDTO.getNumeroHabitacion());
+        habitacion.setTipo(habitacionDTO.getTipo());
+        habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
+        return habitacion;
+    }
 
+    
 }

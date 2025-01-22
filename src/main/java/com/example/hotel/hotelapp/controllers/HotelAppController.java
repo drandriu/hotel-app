@@ -6,10 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.hotel.hotelapp.dtos.HabitacionDTO;
+import com.example.hotel.hotelapp.dtos.HotelDTO;
+import com.example.hotel.hotelapp.dtos.HuespedDTO;
+import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.entities.*;
 import com.example.hotel.hotelapp.services.*;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +42,7 @@ public class HotelAppController {
     @Operation(summary = "Obtener todos los hoteles")
     public ResponseEntity<?> obtenerHoteles() {
         try {
-            List<Hotel> hoteles = hotelService.findAll();
+            List<HotelDTO> hoteles = hotelService.findAll();
 
             if (hoteles.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay hoteles disponibles.");
@@ -52,9 +57,9 @@ public class HotelAppController {
     
     @PostMapping("/hoteles")
     @Operation(summary = "Registrar Hotel")
-    public ResponseEntity<?> registrarHotel(@RequestBody Hotel hotel) {
+    public ResponseEntity<?> registrarHotel(@RequestBody HotelDTO hotel) {
         try {
-            Hotel nuevoHotel = hotelService.registrarHotel(hotel);
+            HotelDTO nuevoHotel = hotelService.registrarHotel(hotel);
     
             if (nuevoHotel == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos para el registro de hotel");
@@ -71,9 +76,9 @@ public class HotelAppController {
 
     @PutMapping("/hoteles/{id}")
     @Operation(summary = "Actualizar Hotel")
-    public ResponseEntity<?> actualizarHotel(@PathVariable int id, @RequestBody Hotel hotelDetails) {
+    public ResponseEntity<?> actualizarHotel(@PathVariable int id, @RequestBody HotelDTO hotelDetails) {
         try {
-            Hotel hotelActualizado = hotelService.updateHotel(id, hotelDetails);
+            HotelDTO hotelActualizado = hotelService.updateHotel(id, hotelDetails);
     
             if (hotelActualizado == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -95,8 +100,7 @@ public class HotelAppController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
             try {
-                Page<Hotel> hoteles = hotelService.buscarHotelesFiltro(parameters, page, size);
-        
+                Page<HotelDTO> hoteles = hotelService.buscarHotelesFiltro(parameters, page, size);
                 if (hoteles.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
                 }
@@ -135,7 +139,7 @@ public class HotelAppController {
     public ResponseEntity<?> obtenerHabitaciones() {
         //return habitacionService.findAll();
         try {
-            List<Habitacion> habitaciones = habitacionService.findAll();
+            List<HabitacionDTO> habitaciones = habitacionService.findAll();
 
             if (habitaciones.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay habitaciones disponibles.");
@@ -150,10 +154,10 @@ public class HotelAppController {
 
     @PostMapping("/habitaciones")
     @Operation(summary = "Registrar Habitacion")
-    public ResponseEntity<?> registrarHabitacion(@RequestBody Habitacion habitacion) {
+    public ResponseEntity<?> registrarHabitacion(@RequestBody HabitacionDTO habitacionDTO) {
         //return habitacionService.registrarHabitacion(habitacion);
         try {
-            Habitacion nuevaHabitacion = habitacionService.registrarHabitacion(habitacion);
+            HabitacionDTO nuevaHabitacion = habitacionService.registrarHabitacion(habitacionDTO);
     
             if (nuevaHabitacion == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos para el registro de habitación.");
@@ -169,10 +173,10 @@ public class HotelAppController {
 
     @PutMapping("/habitaciones/{id}")
     @Operation(summary = "Actualizar Habitacion")
-    public ResponseEntity<?> actualizarHabitacion(@PathVariable int id, @RequestBody Habitacion habitacionDetails) {
+    public ResponseEntity<?> actualizarHabitacion(@PathVariable int id, @RequestBody HabitacionDTO habitacionDetails) {
         //return habitacionService.updateHabitacion(id, habitacionDetails);
         try {
-            Habitacion habitacionActualizada = habitacionService.updateHabitacion(id, habitacionDetails);
+            HabitacionDTO habitacionActualizada = habitacionService.updateHabitacion(id, habitacionDetails);
     
             if (habitacionActualizada == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -194,7 +198,7 @@ public class HotelAppController {
     @RequestParam(defaultValue = "10") int size) {
         //return habitacionService.buscarHabitacionesFiltro(parameters, page, size);
         try {
-            Page<Habitacion> habitaciones = habitacionService.buscarHabitacionesFiltro(parameters, page, size);
+            Page<HabitacionDTO> habitaciones = habitacionService.buscarHabitacionesFiltro(parameters, page, size);
     
             if (habitaciones.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -234,7 +238,7 @@ public class HotelAppController {
     public ResponseEntity<?> obtenerHuespedes() {
         //return huespedService.findAll();
         try {
-            List<Huesped> huespedes = huespedService.findAll();
+            List<HuespedDTO> huespedes = huespedService.findAll();
             if (huespedes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay huéspedes disponibles.");
             }
@@ -248,10 +252,10 @@ public class HotelAppController {
 
     @PostMapping("/huespedes")
     @Operation(summary = "Registrar huesped")
-    public ResponseEntity<?> registrarHuesped(@RequestBody Huesped huesped) {
+    public ResponseEntity<?> registrarHuesped(@RequestBody HuespedDTO huespedDTO) {
         //return huespedService.registrarHuesped(huesped);
         try {
-            Huesped nuevoHuesped = huespedService.registrarHuesped(huesped);
+            HuespedDTO nuevoHuesped = huespedService.registrarHuesped(huespedDTO);
     
             if (nuevoHuesped == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos para el registro de huesped.");
@@ -267,21 +271,20 @@ public class HotelAppController {
 
     @PutMapping("/huespedes/{id}")
     @Operation(summary = "Actualizar huespedes")
-    public ResponseEntity<?> actualizarHuesped(@PathVariable int id, @RequestBody Huesped huespedDetails) {
-        //return huespedService.updateHuesped(id, huespedDetails);
+    public ResponseEntity<?> actualizarHuesped(@PathVariable int id, @RequestBody HuespedDTO huespedDTO) {
         try {
-            Huesped huespedActualizado = huespedService.updateHuesped(id, huespedDetails);
+            HuespedDTO huespedActualizado = huespedService.updateHuesped(id, huespedDTO);
     
             if (huespedActualizado == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Datos inválidos o el huesped no fue encontrado.");
+                    .body("Datos inválidos o el huésped no fue encontrado.");
             }
     
             return ResponseEntity.ok(huespedActualizado);
     
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error interno al actualizar el huesped.");
+                .body("Error interno al actualizar el huésped.");
         }
     }
 
@@ -292,7 +295,7 @@ public class HotelAppController {
     @RequestParam(defaultValue = "10") int size) {
         //return huespedService.buscarHuespedFiltro(parameters, page, size);
         try {
-            Page<Huesped> huespedes = huespedService.buscarHuespedFiltro(parameters, page, size);
+            Page<HuespedDTO> huespedes = huespedService.buscarHuespedFiltro(parameters, page, size);
     
             if (huespedes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -331,9 +334,8 @@ public class HotelAppController {
     @GetMapping("/servicios")
     @Operation(summary = "Obtener todos los servicios")
     public ResponseEntity<?> obtenerServicios() {
-        //return servicioService.findAll();
         try {
-            List<Servicio> servicios = servicioService.findAll();
+            List<ServicioDTO> servicios = servicioService.findAll();
 
             if (servicios.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay servicios disponibles.");
@@ -342,24 +344,22 @@ public class HotelAppController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener la lista de servicios. Por favor, inténtelo más tarde.");
+                    .body("Error al obtener la lista de servicios.");
         }
     }
 
     @PostMapping("/servicios")
     @Operation(summary = "Registrar servicio")
-    public ResponseEntity<?> registrarServicio(@RequestBody Servicio servicio) {
-        //return servicioService.registrarServicio(servicio);
+    public ResponseEntity<?> registrarServicio(@Valid @RequestBody ServicioDTO servicioDTO) {
         try {
-            Servicio nuevoServicio = servicioService.registrarServicio(servicio);
-    
+            ServicioDTO nuevoServicio = servicioService.registrarServicio(servicioDTO);
+
             if (nuevoServicio == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos para el registro de servicio.");
             }
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
-    
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al registrar el servicio.");
         }
@@ -367,18 +367,16 @@ public class HotelAppController {
 
     @PutMapping("/servicios/{id}")
     @Operation(summary = "Actualizar servicio")
-    public ResponseEntity<?> actualizarServicio(@PathVariable int id, @RequestBody Servicio servicioDetails) {
-        //return servicioService.updateServicio(id, servicioDetails);
+    public ResponseEntity<?> actualizarServicio(@PathVariable int id, @Valid @RequestBody ServicioDTO servicioDTO) {
         try {
-            Servicio servicioActualizado = servicioService.updateServicio(id, servicioDetails);
-    
+            ServicioDTO servicioActualizado = servicioService.updateServicio(id, servicioDTO);
+
             if (servicioActualizado == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Datos inválidos o el servicio no fue encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Servicio no encontrado o error de datos.");
             }
-    
+
             return ResponseEntity.ok(servicioActualizado);
-    
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error interno al actualizar el servicio.");
@@ -388,18 +386,16 @@ public class HotelAppController {
     @GetMapping("/servicios/filtros")
     @Operation(summary = "Obtener todos los huespedes")
     public ResponseEntity<?> buscarServiciosFiltro(@RequestParam Map<String, String> parameters,
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size) {
-        //return servicioService.buscarServiciosFiltro(parameters, page, size);
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
         try {
-            Page<Servicio> servicios = servicioService.buscarServiciosFiltro(parameters, page, size);
-    
+            Page<ServicioDTO> servicios = servicioService.buscarServiciosFiltro(parameters, page, size);
+
             if (servicios.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
-    
+
             return ResponseEntity.ok(servicios);
-    
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error interno al buscar servicios.");
@@ -409,17 +405,15 @@ public class HotelAppController {
     @DeleteMapping("/servicios/{id}")
     @Operation(summary = "Eliminar servicio")
     public ResponseEntity<?> eliminarServicio(@PathVariable int id) {
-        //servicioService.eliminarServicio(id);
         try {
             boolean eliminado = servicioService.eliminarServicio(id);
-    
+
             if (!eliminado) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Servicio con ID " + id + " no encontrado.");
             }
-    
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 sin contenido
-    
+
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error interno al eliminar el servicio.");
