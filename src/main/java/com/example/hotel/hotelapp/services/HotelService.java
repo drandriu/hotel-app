@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
 
 @Service
@@ -76,17 +78,18 @@ public class HotelService {
         return hotelPage.map(this::convertirA_DTO);
     }
 
+    @Transactional
     public boolean eliminarHotel(int id) {
         if (!hotelRepository.existsById(id)) {
             return false;
         }
     
         // Obtener todas las habitaciones del hotel
-        List<Habitacion> habitaciones = habitacionRepository.findByIdHotel(id);
+        List<Habitacion> habitaciones = habitacionRepository.findByHotelId(id);
     
         // Eliminar huéspedes de cada habitación antes de eliminar la habitación
         for (Habitacion habitacion : habitaciones) {
-            huespedRepository.deleteByIdHabitacion(habitacion.getId());
+            huespedRepository.deleteByHabitacionId(habitacion.getId());
             habitacionRepository.deleteById(habitacion.getId());
         }
     

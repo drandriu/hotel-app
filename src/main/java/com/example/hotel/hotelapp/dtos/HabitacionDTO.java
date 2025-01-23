@@ -57,4 +57,15 @@ public class HabitacionDTO {
     public void setPrecioNoche(float precioNoche) {
         this.precioNoche = precioNoche;
     }
+
+    @Override
+    public String toString() {
+        return "Habitacion{" +
+                "id=" + id +
+                ", idHotel=" + idHotel +
+                ", numeroHabitacion='" + numeroHabitacion + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", precioNoche=" + precioNoche +
+                '}';
+    }
 }

@@ -3,6 +3,8 @@ package com.example.hotel.hotelapp.controllers;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,8 +22,7 @@ import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.services.ServicioService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/servicios")

@@ -6,14 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.dtos.HotelDTO;
-import com.example.hotel.hotelapp.dtos.HuespedDTO;
-import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.services.*;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;

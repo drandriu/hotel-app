@@ -3,20 +3,19 @@ package com.example.hotel.hotelapp.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.hotel.hotelapp.services.HuespedService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import com.example.hotel.hotelapp.dtos.HabitacionDTO;
-import com.example.hotel.hotelapp.dtos.HotelDTO;
+
 import com.example.hotel.hotelapp.dtos.HuespedDTO;
-import com.example.hotel.hotelapp.dtos.ServicioDTO;
-import com.example.hotel.hotelapp.services.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
+
 
 import java.util.List;
 import java.util.Map;

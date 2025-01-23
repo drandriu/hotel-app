@@ -11,10 +11,10 @@ import org.springframework.data.repository.query.Param;
 import com.example.hotel.hotelapp.entities.Huesped;
 
 public interface HuespedRepository extends JpaRepository<Huesped, Integer>{
-    void deleteByIdHabitacion(int id);
+    void deleteByHabitacionId(int id);
     @Query("SELECT h FROM Huesped h WHERE " +
            "(:idHuesped IS NULL OR h.idHuesped = :idHuesped) AND " +
-           "(:idHabitacion IS NULL OR h.idHabitacion = :idHabitacion) AND " +
+           "(:idHabitacion IS NULL OR h.habitacion.id = :idHabitacion) AND " +
            "(:nombre IS NULL OR h.nombre LIKE %:nombre%) AND " +
            "(:apellido IS NULL OR h.apellido LIKE %:apellido%) AND " +
            "(:dniPasaporte IS NULL OR h.dniPasaporte LIKE %:dniPasaporte%) AND " +

@@ -12,10 +12,10 @@ import com.example.hotel.hotelapp.entities.Habitacion;
 
 
 public interface HabitacionRepository extends JpaRepository<Habitacion, Integer> {
-    List<Habitacion> findByIdHotel(int idHotel);
+    List<Habitacion> findByHotelId(int hotelId);
     @Query("SELECT h FROM Habitacion h WHERE " +
        "(:id IS NULL OR h.id = :id) AND " +
-       "(:idHotel IS NULL OR h.idHotel = :idHotel) AND " +
+       "(:idHotel IS NULL OR h.hotel.id = :idHotel) AND " +
        "(:numeroHabitacion IS NULL OR h.numeroHabitacion LIKE %:numeroHabitacion%) AND " +
        "(:tipo IS NULL OR h.tipo LIKE %:tipo%) AND " +
        "(:precioNoche IS NULL OR h.precioNoche = :precioNoche)")

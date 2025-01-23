@@ -1,14 +1,19 @@
 package com.example.hotel.hotelapp.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Hotel {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private int id;
     private String nombre;
@@ -17,6 +22,15 @@ public class Hotel {
     private String email;
     private String sitioWeb;
 
+    
+    @ManyToMany
+    @JoinTable(
+        name = "hotelservicio",
+        joinColumns = @JoinColumn(name = "id_hotel"),
+        inverseJoinColumns = @JoinColumn(name = "id_servicio")
+    )
+    private List<Servicio> servicios;
+    
     // Constructor vacío
     public Hotel() {
     }
@@ -83,4 +97,14 @@ public class Hotel {
     public void setSitioWeb(String sitioWeb) {
         this.sitioWeb = sitioWeb;
     }
+
+        
+    public List<Servicio> getServicios(){
+        return servicios;
+    }
+    
+    public void setServicios(List<Servicio> lista){
+        this.servicios = lista;
+    }
+        
 }

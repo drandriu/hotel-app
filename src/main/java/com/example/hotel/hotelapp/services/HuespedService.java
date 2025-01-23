@@ -1,7 +1,9 @@
 package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.HuespedDTO;
+import com.example.hotel.hotelapp.entities.Habitacion;
 import com.example.hotel.hotelapp.entities.Huesped;
+import com.example.hotel.hotelapp.repositories.HabitacionRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,8 @@ public class HuespedService {
 
     @Autowired
     private HuespedRepository huespedRepository;
+
+    @Autowired HabitacionRepository habitacionRepository;
 
     public List<HuespedDTO> findAll() {
         return huespedRepository.findAll().stream()
@@ -90,7 +94,7 @@ public class HuespedService {
     private HuespedDTO convertirA_DTO(Huesped huesped) {
     return new HuespedDTO(
         huesped.getIdHuesped(),
-        huesped.getIdHabitacion(),
+        huesped.getHabitacion().getId(),
         huesped.getNombre(),
         huesped.getApellido(),
         huesped.getDniPasaporte(),
@@ -102,7 +106,11 @@ public class HuespedService {
     private Huesped convertirA_Entidad(HuespedDTO huespedDTO) {
         Huesped huesped = new Huesped();
         huesped.setIdHuesped(huespedDTO.getIdHuesped());
-        huesped.setIdHabitacion(huespedDTO.getIdHabitacion());
+        Optional<Habitacion> habitacionOptional = habitacionRepository.findById(huespedDTO.getIdHabitacion());
+        if(!habitacionOptional.isPresent()){
+            return null;
+        }
+        huesped.setHabitacion(habitacionOptional.get());
         huesped.setNombre(huespedDTO.getNombre());
         huesped.setApellido(huespedDTO.getApellido());
         huesped.setDniPasaporte(huespedDTO.getDniPasaporte());

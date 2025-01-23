@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.1</version>
+		<version>2.7.9</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.hotel</groupId>
@@ -14,7 +14,7 @@
 	<name>hotel-app</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -28,7 +28,7 @@
 			<scope>test</scope>
 		</dependency>
 
-				<dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
@@ -45,25 +45,25 @@
 		</dependency>
 
 		<!-- Dependencia para H2 (base de datos en memoria para pruebas) -->
+		<!--
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
+		-->
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.6.15</version> <!-- Compatible con Java 11 -->
 		</dependency>
 
-		    <!-- Dependencias para pruebas unitarias -->
+		<!-- Dependencias para pruebas unitarias -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 			<exclusions>
-				<!-- Excluir JUnit 4 para usar solo JUnit 5 -->
 				<exclusion>
 					<groupId>junit</groupId>
 					<artifactId>junit</artifactId>
@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.7.0</version>
+			<version>4.8.1</version> <!-- Compatible con Java 11 -->
 			<scope>test</scope>
 		</dependency>
 
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.7.0</version>
+			<version>4.8.1</version> <!-- Compatible con Java 11 -->
 			<scope>test</scope>
 		</dependency>
 
@@ -91,13 +91,17 @@
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.24.2</version>
+			<version>3.22.0</version> <!-- Compatible con Java 11 -->
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.0.33</version> <!-- Compatible con Java 11 -->
+			<scope>runtime</scope>
+		</dependency>
 
-
-
- </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>

@@ -1,18 +1,20 @@
 package com.example.hotel.hotelapp.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 @Entity
 public class Habitacion {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private int id;
-
-    private int idHotel; //foreing key
+    @ManyToOne
+    @JoinColumn(name = "id_hotel")
+    private Hotel hotel;
     private String numeroHabitacion;
     private String tipo;
     private float precioNoche;
@@ -22,16 +24,26 @@ public class Habitacion {
     public Habitacion() {
     }
 
-    public Habitacion(int id, int idHotel, String numeroHabitacion, String tipo, float precioNoche) {
+    public Habitacion(int id, Hotel hotel, String numeroHabitacion, String tipo, float precioNoche) {
         this.id = id;
-        this.idHotel = idHotel;
+        this.hotel = hotel;
         this.numeroHabitacion = numeroHabitacion;
         this.tipo = tipo;
         this.precioNoche = precioNoche;
     }
 
 
-
+    // Sobrescribir toString para imprimir los valores de los campos
+    @Override
+    public String toString() {
+        return "Habitacion{" +
+                "id=" + id +
+                ", idHotel=" + hotel.getId() +
+                ", numeroHabitacion='" + numeroHabitacion + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", precioNoche=" + precioNoche +
+                '}';
+    }
     
     // Getters y Setters
     public int getId() {
@@ -42,12 +54,12 @@ public class Habitacion {
         this.id = id;
     }
 
-    public int getIdHotel() {
-        return idHotel;
+    public Hotel getHotel() {
+        return hotel;
     }
 
-    public void setIdHotel(int idHotel) {
-        this.idHotel = idHotel;
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 
     public String getNumeroHabitacion() {

@@ -2,23 +2,28 @@ package com.example.hotel.hotelapp.entities;
 
 import java.sql.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Huesped {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private int idHuesped;
 
-
-    private int idHabitacion; //id unico de la habitacion a la que pertenecen
+    @ManyToOne
+    @JoinColumn(name = "id_habitacion")
+    private Habitacion habitacion; //id unico de la habitacion a la que pertenecen
 
     private String nombre;
     private String apellido;
+
     private String dniPasaporte;
     private Date fechaCheckIn;
     private Date fechaCheckOut;
@@ -28,9 +33,9 @@ public class Huesped {
     }
 
 
-    public Huesped(int idHuesped, int idHabitacion, String nombre, String apellido, String dniPasaporte, Date fechaCheckIn, Date fechaCheckOut) {
+    public Huesped(int idHuesped, Habitacion habitacion, String nombre, String apellido, String dniPasaporte, Date fechaCheckIn, Date fechaCheckOut) {
         this.idHuesped = idHuesped;
-        this.idHabitacion = idHabitacion;
+        this.habitacion = habitacion;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dniPasaporte = dniPasaporte;
@@ -49,12 +54,12 @@ public class Huesped {
     public void setIdHuesped(int id){
         this.idHuesped = id;
     }
-    public int getIdHabitacion() {
-        return idHabitacion;
+    public Habitacion getHabitacion() {
+        return habitacion;
     }
 
-    public void setIdHabitacion(int id) {
-        this.idHabitacion = id;
+    public void setHabitacion(Habitacion habitacion) {
+        this.habitacion = habitacion;
     }
 
     public String getNombre() {

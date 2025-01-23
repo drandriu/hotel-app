@@ -20,8 +20,7 @@ import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.services.HabitacionService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/habitaciones")
@@ -53,6 +52,7 @@ public class HabitacionController {
     public ResponseEntity<?> registrarHabitacion(@RequestBody HabitacionDTO habitacionDTO) {
         //return habitacionService.registrarHabitacion(habitacion);
         try {
+
             HabitacionDTO nuevaHabitacion = habitacionService.registrarHabitacion(habitacionDTO);
     
             if (nuevaHabitacion == null) {

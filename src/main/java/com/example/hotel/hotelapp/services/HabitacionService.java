@@ -2,7 +2,9 @@ package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
+import com.example.hotel.hotelapp.entities.Hotel;
 import com.example.hotel.hotelapp.repositories.HabitacionRepository;
+import com.example.hotel.hotelapp.repositories.HotelRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class HabitacionService {
     @Autowired
     private HuespedRepository huespedRepository;
 
+    @Autowired HotelRepository hotelRepository;
+
     public List<HabitacionDTO> findAll() {
         //return habitacionRepository.findAll();
         return habitacionRepository.findAll().stream()
@@ -41,6 +45,8 @@ public class HabitacionService {
         }
         return habitacionRepository.save(habitacion);*/
         Habitacion habitacion = convertirA_Entidad(habitacionDTO);
+        // Imprimir el objeto para ver su contenido
+        //System.out.println("***************Habitacion: " + habitacion.toString());
         if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null
         ||habitacion.getNumeroHabitacion() == "" || habitacion.getTipo() == "") {
             return null;
@@ -58,7 +64,11 @@ public class HabitacionService {
         habitacion.setNumeroHabitacion(habitacionDTO.getNumeroHabitacion());
         habitacion.setTipo(habitacionDTO.getTipo());
         habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());
-        habitacion.setIdHotel(habitacionDTO.getIdHotel());
+        Optional<Hotel> hotel = (hotelRepository.findById(habitacionDTO.getIdHotel()));
+        if(!hotel.isPresent()){
+            return null;
+        }
+        habitacion.setHotel(hotel.get());
         if (habitacion.getNumeroHabitacion() == null || habitacion.getTipo() == null
         ||habitacion.getNumeroHabitacion() == "" || habitacion.getTipo() == "") {
             return null;
@@ -88,7 +98,7 @@ public class HabitacionService {
             return false;
         }
     
-        huespedRepository.deleteByIdHabitacion(id);
+        huespedRepository.deleteByHabitacionId(id);
         habitacionRepository.deleteById(id);
         return true;
     }
@@ -96,7 +106,7 @@ public class HabitacionService {
     private HabitacionDTO convertirA_DTO(Habitacion habitacion) {
         return new HabitacionDTO(
         habitacion.getId(),
-        habitacion.getIdHotel(),
+        habitacion.getHotel().getId(),
         habitacion.getNumeroHabitacion(),
         habitacion.getTipo(),
         habitacion.getPrecioNoche()
@@ -105,7 +115,11 @@ public class HabitacionService {
     private Habitacion convertirA_Entidad(HabitacionDTO habitacionDTO) {
         Habitacion habitacion = new Habitacion();
         habitacion.setId(habitacionDTO.getId());
-        habitacion.setIdHotel(habitacionDTO.getIdHotel());
+        Optional<Hotel> hotel = hotelRepository.findById(habitacionDTO.getIdHotel());
+        if(!hotel.isPresent()){
+            return null;
+        }
+        habitacion.setHotel(hotel.get());
         habitacion.setNumeroHabitacion(habitacionDTO.getNumeroHabitacion());
         habitacion.setTipo(habitacionDTO.getTipo());
         habitacion.setPrecioNoche(habitacionDTO.getPrecioNoche());

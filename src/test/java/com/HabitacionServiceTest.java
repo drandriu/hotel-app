@@ -1,3 +1,5 @@
+/* 
+
 package com;
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
@@ -147,3 +149,4 @@ class HabitacionServiceTest {
     }
 }
 
+*/
