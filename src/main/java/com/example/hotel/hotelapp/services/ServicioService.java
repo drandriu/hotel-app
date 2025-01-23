@@ -1,7 +1,9 @@
 package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.ServicioDTO;
+import com.example.hotel.hotelapp.entities.Hotel;
 import com.example.hotel.hotelapp.entities.Servicio;
+import com.example.hotel.hotelapp.repositories.HotelRepository;
 import com.example.hotel.hotelapp.repositories.ServicioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,12 +16,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 
 @Service
 public class ServicioService {
 
     @Autowired
     private ServicioRepository servicioRepository;
+
+    @Autowired
+    private HotelRepository hotelRepository;
 
     public List<ServicioDTO> findAll() {
         return servicioRepository.findAll().stream()
@@ -65,6 +72,7 @@ public class ServicioService {
         return servicios.map(this::convertirA_DTO);
     }
 
+    @Transactional
     public boolean eliminarServicio(int id) {
         if (!servicioRepository.existsById(id)) {
             return false;
@@ -72,6 +80,24 @@ public class ServicioService {
         servicioRepository.deleteById(id);
         return true;
     }
+
+    public boolean asignarServicioAHotel(int servicioId, int hotelId) {
+        Optional<Servicio> servicio = servicioRepository.findById(servicioId);
+        Optional<Hotel> hotel = hotelRepository.findById(hotelId);
+
+        if (servicio.isPresent() && hotel.isPresent()) {
+            Hotel h = hotel.get();
+            Servicio s = servicio.get();
+            h.getServicios().add(s);
+            hotelRepository.save(h);
+
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     private ServicioDTO convertirA_DTO(Servicio servicio) {
         return new ServicioDTO(servicio.getId(), servicio.getNombre(), servicio.getDescripcion());

@@ -85,7 +85,7 @@ public class ServicioController {
     }
 
     @GetMapping("/filtros")
-    @Operation(summary = "Obtener todos los huespedes")
+    @Operation(summary = "Obtener servicios con filtro")
     public ResponseEntity<?> buscarServiciosFiltro(@RequestParam Map<String, String> parameters,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
@@ -120,4 +120,24 @@ public class ServicioController {
                 .body("Error interno al eliminar el servicio.");
         }
     }
+
+    @PostMapping("/asignar")
+    @Operation(summary = "Asignar un servicio a un hotel")
+    public ResponseEntity<?> asignarServicioAHotel(@RequestParam int servicioId, @RequestParam int hotelId) {
+        try {
+            // Llama al servicio para realizar la acción de asignación
+            boolean asignado = servicioService.asignarServicioAHotel(servicioId, hotelId);
+
+            if (!asignado) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("No se pudo asignar el servicio al hotel.");
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body("Servicio asignado correctamente al hotel.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno al asignar el servicio al hotel.");
+        }
+    }
+
 }
