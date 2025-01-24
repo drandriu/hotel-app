@@ -5,12 +5,13 @@ import java.sql.Date;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.hotel.hotelapp.entities.Huesped;
 
-public interface HuespedRepository extends JpaRepository<Huesped, Integer>{
+public interface HuespedRepository extends JpaRepository<Huesped, Integer>, JpaSpecificationExecutor<Huesped>{
     void deleteByHabitacionId(int id);
     @Query("SELECT h FROM Huesped h WHERE " +
            "(:idHuesped IS NULL OR h.idHuesped = :idHuesped) AND " +

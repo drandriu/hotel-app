@@ -3,12 +3,13 @@ package com.example.hotel.hotelapp.repositories;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.hotel.hotelapp.entities.Servicio;
 
-public interface ServicioRepository extends JpaRepository<Servicio, Integer> {
+public interface ServicioRepository extends JpaRepository<Servicio, Integer>, JpaSpecificationExecutor<Servicio> {
     @Query("SELECT s FROM Servicio s " +
            "WHERE (:id IS NULL OR s.id = :id) " +
            "AND (:nombre IS NULL OR s.nombre LIKE %:nombre%) " +

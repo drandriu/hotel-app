@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.services.ServicioService;
 
@@ -137,6 +138,23 @@ public class ServicioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al asignar el servicio al hotel.");
+        }
+    }
+
+    @PostMapping("/search")
+    @Operation(summary = "Buscar servicios con filtros dinámicos")
+    public ResponseEntity<?> buscarServiciosDinamico(@RequestBody DynamicSearchDTO searchDTO) {
+        try {
+            Page<ServicioDTO> servicios = servicioService.buscarServiciosDinamico(searchDTO);
+
+            if (servicios.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+
+            return ResponseEntity.ok(servicios);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error interno al buscar servicios con filtros dinámicos.");
         }
     }
 

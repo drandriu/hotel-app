@@ -1,8 +1,11 @@
 package com.example.hotel.hotelapp.services;
 
+import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
+import com.example.hotel.hotelapp.dtos.HuespedDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
 import com.example.hotel.hotelapp.entities.Hotel;
+import com.example.hotel.hotelapp.entities.Huesped;
 import com.example.hotel.hotelapp.repositories.HabitacionRepository;
 import com.example.hotel.hotelapp.repositories.HotelRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
@@ -11,12 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.persistence.criteria.Predicate;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,5 +134,60 @@ public class HabitacionService {
         return habitacion;
     }
 
-    
+    public Page<HabitacionDTO> buscarHabitacionesDinamico(DynamicSearchDTO searchDTO) {
+        Pageable pageable = PageRequest.of(
+            searchDTO.getPage().getPageIndex(),
+            searchDTO.getPage().getPageSize()
+        );
+
+        Specification<Habitacion> spec = buildSpecification(searchDTO.getListSearchCriteria());
+
+        if (searchDTO.getListOrderCriteria() != null && !searchDTO.getListOrderCriteria().isEmpty()) {
+            Sort sort = buildSort(searchDTO.getListOrderCriteria());
+            pageable = PageRequest.of(searchDTO.getPage().getPageIndex(), searchDTO.getPage().getPageSize(), sort);
+        }
+
+        Page<Habitacion> habitaciones = habitacionRepository.findAll(spec, pageable);
+        return habitaciones.map(this::convertirA_DTO);
+        }
+
+    private Specification<Habitacion> buildSpecification(List<DynamicSearchDTO.SearchCriteria> criteriaList) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+                
+            for (DynamicSearchDTO.SearchCriteria criteria : criteriaList) {
+                switch (criteria.getOperation().toLowerCase()) {
+                    case "equals":
+                        if (criteria.getKey().equals("hotel")) {
+                            // Aquí, buscamos por el id de la habitación (relación)
+                            predicates.add(criteriaBuilder.equal(root.get("hotel").get("id"), criteria.getValue()));
+                        } else {
+                            // Búsqueda normal para otros campos
+                            predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue()));
+                        }
+                        break;
+                    case "lower":
+                        predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue()));
+                        break;
+                    case "higher":
+                        predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue()));
+                        break;
+                    case "like":
+                        predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
+                        break;
+                }
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    private Sort buildSort(List<DynamicSearchDTO.OrderCriteria> orderCriteria) {
+        List<Sort.Order> orders = orderCriteria.stream()
+            .map(criteria -> new Sort.Order(
+                criteria.getValuesortOrder().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                criteria.getSortBy()
+            ))
+            .collect(Collectors.toList());
+        return Sort.by(orders);
+    }
 }

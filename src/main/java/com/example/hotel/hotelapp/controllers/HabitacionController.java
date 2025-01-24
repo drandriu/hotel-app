@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
+import com.example.hotel.hotelapp.dtos.HuespedDTO;
 import com.example.hotel.hotelapp.services.HabitacionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -125,6 +127,20 @@ public class HabitacionController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error interno al eliminar la habitación.");
+        }
+    }
+    @PostMapping("/buscar")
+    @Operation(summary = "Búsqueda dinámica de huéspedes")
+    public ResponseEntity<?> buscarHabitaciones(@RequestBody DynamicSearchDTO searchRequest) {
+        try {
+            Page<HabitacionDTO> resultado = habitacionService.buscarHabitacionesDinamico(searchRequest);
+            if (resultado.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al realizar la búsqueda dinámica de huéspedes.");
         }
     }
 }

@@ -10,9 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
 
-
+import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HuespedDTO;
 
 
@@ -125,4 +124,18 @@ public class HuespedController {
         }
     }
 
+    @PostMapping("/buscar")
+    @Operation(summary = "Búsqueda dinámica de huéspedes")
+    public ResponseEntity<?> buscarHuespedes(@RequestBody DynamicSearchDTO searchRequest) {
+        try {
+            Page<HuespedDTO> resultado = huespedService.buscarHuespedDinamico(searchRequest);
+            if (resultado.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al realizar la búsqueda dinámica de huéspedes.");
+        }
+    }
 }

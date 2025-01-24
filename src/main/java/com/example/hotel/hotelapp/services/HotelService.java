@@ -1,5 +1,7 @@
 package com.example.hotel.hotelapp.services;
 
+import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
+import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.dtos.HotelDTO;
 import com.example.hotel.hotelapp.entities.*;
 import com.example.hotel.hotelapp.repositories.*;
@@ -8,14 +10,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class HotelService {
@@ -120,4 +126,54 @@ public class HotelService {
         return hotel;
     }
     
+    public Page<HotelDTO> buscarHotelDinamico(DynamicSearchDTO searchDTO) {
+        Pageable pageable = PageRequest.of(
+            searchDTO.getPage().getPageIndex(),
+            searchDTO.getPage().getPageSize()
+        );
+
+        Specification<Hotel> spec = buildSpecification(searchDTO.getListSearchCriteria());
+
+        if (searchDTO.getListOrderCriteria() != null && !searchDTO.getListOrderCriteria().isEmpty()) {
+            Sort sort = buildSort(searchDTO.getListOrderCriteria());
+            pageable = PageRequest.of(searchDTO.getPage().getPageIndex(), searchDTO.getPage().getPageSize(), sort);
+        }
+
+        Page<Hotel> hoteles = hotelRepository.findAll(spec, pageable);
+        return hoteles.map(this::convertirA_DTO);
+        }
+
+    private Specification<Hotel> buildSpecification(List<DynamicSearchDTO.SearchCriteria> criteriaList) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+                
+            for (DynamicSearchDTO.SearchCriteria criteria : criteriaList) {
+                switch (criteria.getOperation().toLowerCase()) {
+                    case "equals":
+                        predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue()));
+                        break;
+                    case "lower":
+                        predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue()));
+                        break;
+                    case "higher":
+                        predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue()));
+                        break;
+                    case "like":
+                        predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
+                        break;
+                }
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    private Sort buildSort(List<DynamicSearchDTO.OrderCriteria> orderCriteria) {
+        List<Sort.Order> orders = orderCriteria.stream()
+            .map(criteria -> new Sort.Order(
+                criteria.getValuesortOrder().equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                criteria.getSortBy()
+            ))
+            .collect(Collectors.toList());
+        return Sort.by(orders);
+    }
 }

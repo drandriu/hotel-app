@@ -5,13 +5,14 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.hotel.hotelapp.entities.Habitacion;
 
 
-public interface HabitacionRepository extends JpaRepository<Habitacion, Integer> {
+public interface HabitacionRepository extends JpaRepository<Habitacion, Integer>, JpaSpecificationExecutor<Habitacion> {
     List<Habitacion> findByHotelId(int hotelId);
     @Query("SELECT h FROM Habitacion h WHERE " +
        "(:id IS NULL OR h.id = :id) AND " +
