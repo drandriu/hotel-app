@@ -30,10 +30,13 @@ public class HuespedController {
     // --------- Gestión de Huéspedes ---------
     @GetMapping
     @Operation(summary = "Obtener todos los huespedes")
-    public ResponseEntity<?> obtenerHuespedes() {
+    public ResponseEntity<?> obtenerHuespedes(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size) {
         //return huespedService.findAll();
         try {
-            List<HuespedDTO> huespedes = huespedService.findAll();
+        
+            Page<HuespedDTO> huespedes = huespedService.findAll(page, size);
             if (huespedes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay huéspedes disponibles.");
             }

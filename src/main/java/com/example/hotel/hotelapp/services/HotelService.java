@@ -1,7 +1,6 @@
 package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
-import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.dtos.HotelDTO;
 import com.example.hotel.hotelapp.entities.*;
 import com.example.hotel.hotelapp.repositories.*;

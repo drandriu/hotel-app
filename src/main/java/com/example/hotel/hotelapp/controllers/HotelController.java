@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
-import com.example.hotel.hotelapp.dtos.HabitacionDTO;
 import com.example.hotel.hotelapp.dtos.HotelDTO;
 import com.example.hotel.hotelapp.services.*;
 

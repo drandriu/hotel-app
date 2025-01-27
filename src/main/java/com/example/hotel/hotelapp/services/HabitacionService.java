@@ -2,10 +2,8 @@ package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
-import com.example.hotel.hotelapp.dtos.HuespedDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
 import com.example.hotel.hotelapp.entities.Hotel;
-import com.example.hotel.hotelapp.entities.Huesped;
 import com.example.hotel.hotelapp.repositories.HabitacionRepository;
 import com.example.hotel.hotelapp.repositories.HotelRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;

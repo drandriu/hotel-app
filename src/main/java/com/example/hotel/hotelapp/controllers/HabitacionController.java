@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HabitacionDTO;
-import com.example.hotel.hotelapp.dtos.HuespedDTO;
 import com.example.hotel.hotelapp.services.HabitacionService;
 
 import io.swagger.v3.oas.annotations.Operation;

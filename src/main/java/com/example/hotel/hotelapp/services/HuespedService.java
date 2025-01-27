@@ -2,10 +2,8 @@ package com.example.hotel.hotelapp.services;
 
 import com.example.hotel.hotelapp.dtos.DynamicSearchDTO;
 import com.example.hotel.hotelapp.dtos.HuespedDTO;
-import com.example.hotel.hotelapp.dtos.ServicioDTO;
 import com.example.hotel.hotelapp.entities.Habitacion;
 import com.example.hotel.hotelapp.entities.Huesped;
-import com.example.hotel.hotelapp.entities.Servicio;
 import com.example.hotel.hotelapp.repositories.HabitacionRepository;
 import com.example.hotel.hotelapp.repositories.HuespedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +32,9 @@ public class HuespedService {
 
     @Autowired HabitacionRepository habitacionRepository;
 
-    public List<HuespedDTO> findAll() {
-        return huespedRepository.findAll().stream()
-                .map(this::convertirA_DTO)
-                .collect(Collectors.toList());
+    public Page<HuespedDTO> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);  // Página 0, tamaño 5
+        return huespedRepository.findAll(pageable).map(this::convertirA_DTO);
     }
 
     public HuespedDTO registrarHuesped(HuespedDTO huespedDTO) {
