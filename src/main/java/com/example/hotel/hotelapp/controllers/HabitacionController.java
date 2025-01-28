@@ -32,10 +32,12 @@ public class HabitacionController {
 
     @GetMapping
     @Operation(summary = "Obtener todas las habitaciones")
-    public ResponseEntity<?> obtenerHabitaciones() {
+    public ResponseEntity<?> obtenerHabitaciones(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size) {
         //return habitacionService.findAll();
         try {
-            List<HabitacionDTO> habitaciones = habitacionService.findAll();
+            Page<HabitacionDTO> habitaciones = habitacionService.findAll(page,size);
 
             if (habitaciones.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay habitaciones disponibles.");

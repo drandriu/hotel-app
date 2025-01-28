@@ -27,9 +27,11 @@ public class HotelController {
 
 @GetMapping
 @Operation(summary = "Obtener todos los hoteles")
-public ResponseEntity<?> obtenerHoteles() {
+public ResponseEntity<?> obtenerHoteles(
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "5") int size) {
     try {
-        List<HotelDTO> hoteles = hotelService.findAll();
+        Page<HotelDTO> hoteles = hotelService.findAll(page, size);
 
         if (hoteles.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay hoteles disponibles.");

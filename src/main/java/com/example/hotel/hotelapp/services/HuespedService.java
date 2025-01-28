@@ -137,39 +137,70 @@ public class HuespedService {
             pageable = PageRequest.of(searchDTO.getPage().getPageIndex(), searchDTO.getPage().getPageSize(), sort);
         }
 
-        Page<Huesped> huespedes = huespedRepository.findAll(spec, pageable);
-        return huespedes.map(this::convertirA_DTO);
+        try {
+            Page<Huesped> huespedes = huespedRepository.findAll(spec, pageable);
+            System.err.println("Huespedes -> " + huespedes.toString());
+            System.err.println("Specificaciones -> " + spec.toString());
+            return huespedes.map(this::convertirA_DTO);
+        } catch (Exception e) {
+            System.err.println("Error ejecutando findAll: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Opcionalmente, vuelve a lanzar la excepción para depuración
+        }
+        //return huespedes.map(this::convertirA_DTO);
         }
 
-    private Specification<Huesped> buildSpecification(List<DynamicSearchDTO.SearchCriteria> criteriaList) {
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-                
-            for (DynamicSearchDTO.SearchCriteria criteria : criteriaList) {
-                switch (criteria.getOperation().toLowerCase()) {
-                    case "equals":
-                        if (criteria.getKey().equals("habitacion")) {
-                            // Aquí, buscamos por el id de la habitación (relación)
-                            predicates.add(criteriaBuilder.equal(root.get("habitacion").get("id"), criteria.getValue()));
-                        } else {
-                            // Búsqueda normal para otros campos
-                            predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue()));
-                        }
-                        break;
-                    case "lower":
-                        predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue()));
-                        break;
-                    case "higher":
-                        predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue()));
-                        break;
-                    case "like":
-                        predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
-                        break;
+        private Specification<Huesped> buildSpecification(List<DynamicSearchDTO.SearchCriteria> criteriaList) {
+            return (root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                System.err.println("Criterios -> " + criteriaList.toString());
+                for (DynamicSearchDTO.SearchCriteria criteria : criteriaList) {
+                    switch (criteria.getOperation().toLowerCase()) {
+                        case "equals":
+                        
+                            if (criteria.getKey().equals("habitacion")) {
+                                // Búsqueda por id de la habitación
+                                predicates.add(criteriaBuilder.equal(root.get("habitacion").get("id"), criteria.getValue()));
+                            } else if (criteria.getKey().equals("fechaCheckIn") || criteria.getKey().equals("fechaCheckOut")) {
+                                // Convertir el valor a java.sql.Date para las fechas
+                                Date dateValue = Date.valueOf(criteria.getValue().toString());
+                                predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), dateValue));
+                            
+                            }else if (criteria.getKey().equals("id")) {
+                                // Búsqueda por idHuesped
+                                predicates.add(criteriaBuilder.equal(root.get("idHuesped"), criteria.getValue()));
+                            }
+                             else { 
+                                // Búsqueda normal para otros campos
+                                predicates.add(criteriaBuilder.equal(root.get(criteria.getKey()), criteria.getValue()));
+                            }
+                            break;
+                        case "lower":
+                            if (criteria.getKey().equals("fechaCheckIn") || criteria.getKey().equals("fechaCheckOut")) {
+                                Date dateValue = Date.valueOf(criteria.getValue().toString());
+                                predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), dateValue));
+                            } else {
+                                predicates.add(criteriaBuilder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString()));
+                            }
+                            break;
+                        case "higher":
+                            if (criteria.getKey().equals("fechaCheckIn") || criteria.getKey().equals("fechaCheckOut")) {
+                                Date dateValue = Date.valueOf(criteria.getValue().toString());
+                                predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), dateValue));
+                            } else {
+                                predicates.add(criteriaBuilder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString()));
+                            }
+                            break;
+                        case "like":
+                            predicates.add(criteriaBuilder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
+                            break;
+                    }
                 }
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
+                System.err.println("Criterios builder -> " + criteriaBuilder.and(predicates.toArray(new Predicate[0])).toString());
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            };
+        }
+        
 
     private Sort buildSort(List<DynamicSearchDTO.OrderCriteria> orderCriteria) {
         List<Sort.Order> orders = orderCriteria.stream()

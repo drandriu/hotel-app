@@ -37,11 +37,9 @@ public class HabitacionService {
 
     @Autowired HotelRepository hotelRepository;
 
-    public List<HabitacionDTO> findAll() {
-        //return habitacionRepository.findAll();
-        return habitacionRepository.findAll().stream()
-                .map(this::convertirA_DTO)
-                .collect(Collectors.toList());
+    public Page<HabitacionDTO> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);  // Página 0, tamaño 5
+        return habitacionRepository.findAll(pageable).map(this::convertirA_DTO);
     }
 
     public HabitacionDTO registrarHabitacion(HabitacionDTO habitacionDTO) {

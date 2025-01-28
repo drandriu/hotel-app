@@ -35,9 +35,11 @@ public class ServicioController {
 
     @GetMapping
     @Operation(summary = "Obtener todos los servicios")
-    public ResponseEntity<?> obtenerServicios() {
+    public ResponseEntity<?> obtenerServicios(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size) {
         try {
-            List<ServicioDTO> servicios = servicioService.findAll();
+            Page<ServicioDTO> servicios = servicioService.findAll(page, size);
 
             if (servicios.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay servicios disponibles.");
@@ -134,7 +136,7 @@ public class ServicioController {
                         .body("No se pudo asignar el servicio al hotel.");
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body("Servicio asignado correctamente al hotel.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno al asignar el servicio al hotel.");

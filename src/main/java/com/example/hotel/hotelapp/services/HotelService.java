@@ -34,10 +34,9 @@ public class HotelService {
     @Autowired
     private HuespedRepository huespedRepository;
 
-    public List<HotelDTO> findAll() {
-        return hotelRepository.findAll().stream()
-                .map(this::convertirA_DTO)
-                .collect(Collectors.toList());
+    public Page<HotelDTO> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);  // Página 0, tamaño 5
+        return hotelRepository.findAll(pageable).map(this::convertirA_DTO);
     }
 
     public HotelDTO registrarHotel(HotelDTO hotelDTO) {
