@@ -29,7 +29,8 @@ public class HotelController {
 @Operation(summary = "Obtener todos los hoteles")
 public ResponseEntity<?> obtenerHoteles(
     @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "5") int size) {
+    @RequestParam(defaultValue = "5") int size
+    ) {
     try {
         Page<HotelDTO> hoteles = hotelService.findAll(page, size);
 
